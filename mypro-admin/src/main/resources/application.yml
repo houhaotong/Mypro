@@ -1,0 +1,74 @@
+mybatis:
+  #扫描所有类路径下的Mapper.xml
+  mapper-locations: classpath*:Mapper/**/*Mapper.xml
+  #指定实体类的包名
+  type-aliases-package: com.mypro.**.domain
+  #开启驼峰命名
+  configuration:
+    map-underscore-to-camel-case: true
+
+spring:
+  #设置springSession
+  session:
+    store-type: redis
+  redis:
+    #lettuce配置
+    lettuce:
+      pool:
+        max-active: 8 #最大连接数 默认为8
+        max-idle: 8 #最大空闲连接数 默认为8
+        min-idle: 0 #最小空闲连接数 默认为0
+    #使用哨兵模式
+    sentinel:
+      master: mymaster
+      nodes: 58.87.111.7:26379,58.87.111.7:26380,58.87.111.7:26381
+      password:
+  thymeleaf:
+    #关闭thymeleaf缓存
+    cache: false
+  jackson:
+    #设置dateFormat的转换格式
+    date-format: yyyy-MM-dd HH:mm:ss
+  datasource:
+    username: root
+    password: 123456
+    url: jdbc:mysql://localhost:3306/mypro
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    #使用druid数据源
+    type: com.alibaba.druid.pool.DruidDataSource
+    #druid连接池配置
+    druid:
+      # 初始连接数
+      initialSize: 5
+      # 最小连接池数量
+      minIdle: 10
+      # 最大连接池数量
+      maxActive: 20
+      # 配置获取连接等待超时的时间
+      maxWait: 60000
+      # 配置间隔多久才进行一次检测，检测需要关闭的空闲连接，单位是毫秒
+      timeBetweenEvictionRunsMillis: 60000
+      # 配置一个连接在池中最小生存的时间，单位是毫秒
+      minEvictableIdleTimeMillis: 300000
+      # 配置一个连接在池中最大生存的时间，单位是毫秒
+      maxEvictableIdleTimeMillis: 900000
+      # 配置检测连接是否有效
+      validation-query: SELECT 1 FROM DUAL
+      #开启页面状态过滤器，用于采集web-jdbc关联监控的数据
+      web-stat-filter:
+        enabled: true
+      stat-view-servlet:
+        #开启监控视图
+        enabled: true
+        #允许名单，不填为全允许
+        allow:
+        #监控视图的账户和密码
+        login-username:
+        login-password:
+        url-pattern: /druid/*
+      filter:
+        stat:
+          enabled: true
+          # 慢SQL记录,超过一秒会记录，这里是关闭状态
+          log-slow-sql: false
+          slow-sql-millis: 1000

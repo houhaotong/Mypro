@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.mypro.system.mapper.ISysUserOnlineMapper">
+    <resultMap id="userOnlineResult" type="com.mypro.system.domain.SysUserOnline">
+        <id     property="sessionId"         column="sessionId"         />
+        <result property="loginName"         column="login_name"        />
+        <result property="deptName"          column="dept_name"         />
+        <result property="ipAddr"            column="ipaddr"            />
+        <result property="loginLocation"     column="login_location"    />
+        <result property="browser"           column="browser"           />
+        <result property="os"                column="os"                />
+        <result property="lastAccessTime"    column="last_access_time"  />
+        <result property="loginTime"        column="login_time"       />
+    </resultMap>
+    <insert id="insertUserOnline">
+        insert into sys_user_online (sessionId, login_name, dept_name, ipaddr, login_location, browser, os, last_access_time, login_time)
+        values (#{sessionId},#{login_name}, #{dept_name}, #{ipaddr}, #{login_location}, #{browser}, #{os}, #{last_access_time}, #{login_time})
+    </insert>
+</mapper>

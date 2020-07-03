@@ -1,0 +1,62 @@
+<!-- 通用CSS -->
+<head th:fragment=header(title)>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="keywords" content="">
+    <meta name="description" content="">
+    <title th:text="${title}"></title>
+    <link rel="shortcut icon" href="favicon.ico">
+    <link th:href="@{/asserts/css/bootstrap.min.css}" rel="stylesheet"/>
+    <link th:href="@{/asserts/css/font-awesome.min.css}" rel="stylesheet"/>
+    <!-- bootstrap-table 表格插件样式 -->
+    <link th:href="@{/asserts/ajax/libs/bootstrap-table/bootstrap-table.min.css}" rel="stylesheet"/>
+    <link th:href="@{/asserts/css/animate.css}" rel="stylesheet"/>
+    <link th:href="@{/asserts/css/style.css?v=20200318}" rel="stylesheet"/>
+    <link th:href="@{/asserts/ruoyi/css/ry-ui.css}" rel="stylesheet"/>
+</head>
+<!-- select2下拉框插件 -->
+<div th:fragment="select2-css">
+    <link th:href="@{/asserts/ajax/libs/select2/select2.min.css}" rel="stylesheet"/>
+    <link th:href="@{/asserts/ajax/libs/select2/select2-bootstrap.css}" rel="stylesheet"/>
+</div>
+<div th:fragment="select2-js">
+    <script th:src="@{/asserts/ajax/libs/select2/select2.min.js}"></script>
+</div>
+<!-- ztree树插件 -->
+<div th:fragment="ztree-css">
+    <link th:href="@{/asserts/ajax/libs/jquery-ztree/3.5/css/metro/zTreeStyle.css}" rel="stylesheet"/>
+</div>
+<div th:fragment="ztree-js">
+    <script th:src="@{/asserts/ajax/libs/jquery-ztree/3.5/js/jquery.ztree.all-3.5.js}"></script>
+</div>
+<!-- 通用JS -->
+<div th:fragment="footer">
+    <a id="scroll-up" href="#" class="btn btn-sm display"><i class="fa fa-angle-double-up"></i></a>
+    <script th:src="@{/asserts/js/jquery.min.js}"></script>
+    <script th:src="@{/webjars/jquery/3.5.1/jquery.js}"></script>
+    <script th:src="@{/asserts/js/bootstrap.min.js}"></script>
+    <!-- bootstrap-table 表格插件 -->
+    <script th:src="@{/asserts/ajax/libs/bootstrap-table/bootstrap-table.min.js?v=20200529}"></script>
+    <script th:src="@{/asserts/ajax/libs/bootstrap-table/locale/bootstrap-table-zh-CN.min.js}"></script>
+    <script th:src="@{/asserts/ajax/libs/bootstrap-table/extensions/mobile/bootstrap-table-mobile.js}"></script>
+    <script th:src="@{/asserts/ajax/libs/bootstrap-table/extensions/toolbar/bootstrap-table-toolbar.min.js}"></script>
+    <script th:src="@{/asserts/ajax/libs/bootstrap-table/extensions/columns/bootstrap-table-fixed-columns.js}"></script>
+    <!-- jquery-validate 表单验证插件 -->
+    <script th:src="@{/asserts/ajax/libs/validate/jquery.validate.min.js}"></script>
+    <script th:src="@{/asserts/ajax/libs/validate/messages_zh.min.js}"></script>
+    <script th:src="@{/asserts/ajax/libs/validate/jquery.validate.extend.js}"></script>
+    <!-- jquery-validate 表单树插件 -->
+    <script th:src="@{/asserts/ajax/libs/bootstrap-treetable/bootstrap-treetable.js}"></script>
+    <!-- jquery-export 表格导出插件 -->
+    <script th:src="@{/asserts/ajax/libs/bootstrap-table/extensions/export/bootstrap-table-export.js}"></script>
+    <script th:src="@{/asserts/ajax/libs/bootstrap-table/extensions/export/tableExport.js}"></script>
+    <!-- 遮罩层 -->
+    <script th:src="@{/asserts/ajax/libs/blockUI/jquery.blockUI.js}"></script>
+    <script th:src="@{/asserts/ajax/libs/iCheck/icheck.min.js}"></script>
+    <script th:src="@{/asserts/ajax/libs/layer/layer.min.js}"></script>
+    <script th:src="@{/asserts/ajax/libs/layui/layui.js}"></script>
+    <script th:src="@{/asserts/ruoyi/js/common.js?v=4.2.0}"></script>
+    <script th:src="@{/asserts/ruoyi/js/ry-ui.js?v=4.2.0}"></script>
+    <script th:inline="javascript"> var ctx = [[@{/asserts/}]]; </script>
+</div>

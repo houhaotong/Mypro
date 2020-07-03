@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html  lang="zh" xmlns:th="http://www.thymeleaf.org">
+
+<head>
+
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+
+    <title>在线用户</title>
+    <link rel="shortcut icon" th:href="@{/asserts/favicon.ico}">
+    <link th:href="@{/asserts/css/bootstrap.min.css?v=3.3.7}" rel="stylesheet">
+    <link th:href="@{/asserts/css/font-awesome.css?v=4.4.0}" rel="stylesheet">
+    <link th:href="@{/asserts/css/plugins/bootstrap-table/bootstrap-table.min.css}" rel="stylesheet">
+    <link th:href="@{/asserts/css/animate.css}" rel="stylesheet">
+    <link th:href="@{/asserts/css/style.css?v=4.1.0}" rel="stylesheet">
+    <link th:href="@{/asserts/css/plugins/switchery/switchery.css}" rel="stylesheet">
+
+</head>
+
+<body class="gray-bg">
+    <div class="wrapper wrapper-content animated fadeInRight">
+
+        <!-- Panel Other -->
+        <div class="ibox float-e-margins">
+            <div class="ibox-title">
+                <h5>用户信息</h5>
+            </div>
+
+            <div class="ibox-content">
+                <div class="row row-lg">
+                    <div class="col-sm-12">
+                        <div class="example-wrap">
+                            <div class="example">
+                                <table id="table">
+
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <th:block th:include="include::footer" />
+    <script th:src="@{/asserts/js/plugins/switchery/switchery.js}"></script>
+
+    <script>
+        var prefix ="/system/user";
+        $(function () {
+            queryUserList();
+
+        })
+        $("#table").bootstrapTable({
+            url:"/monitor/online/all",
+            columns:[
+                {
+                    checkbox: true
+                },
+                {
+                title: '用户ID',
+                field: 'userId'
+                },
+                {
+                    title: '登录名称',
+                    field:'loginName'
+                },
+                {
+                    title: '用户名称',
+                    field: 'userName'
+                },
+                {
+                    title: '部门',
+                    field: 'dept.deptName'
+                },
+                {
+                    title: '登陆时间',
+                    field: 'loginDate',
+                    //获取日期列的值进行转换
+                    formatter: function (value, row, index) {
+                        return changeDateFormat(value)
+                    }
+                },
+                {
+                    title: '操作',
+                    align: 'center',
+                    formatter: function(value, row, index) {
+                        var actions = [];
+                        actions.push('<a class="btn btn-success btn-xs" href="javascript:void(0)" onclick="logout(\'' + row.userId + '\')"><i class="fa fa-edit"></i>下线</a> ');
+                        return actions.join('');
+                    }
+                }]
+        })
+        /**踢出用户*/
+        function logout(userId) {
+            $.ajax({
+                url:"/monitor/online/logout/"+userId,
+                success:function (res) {
+                    window.location.href="/monitor/online";
+                }
+            })
+        }
+        function changeDateFormat(cellval) {
+            var dateVal = cellval + "";
+            if (cellval != null) {
+                var date = new Date(parseInt(dateVal.replace("/Date(", "").replace(")/", ""), 10));
+                var month = date.getMonth() + 1 < 10 ? "0" + (date.getMonth() + 1) : date.getMonth() + 1;
+                var currentDate = date.getDate() < 10 ? "0" + date.getDate() : date.getDate();
+
+                var hours = date.getHours() < 10 ? "0" + date.getHours() : date.getHours();
+                var minutes = date.getMinutes() < 10 ? "0" + date.getMinutes() : date.getMinutes();
+                var seconds = date.getSeconds() < 10 ? "0" + date.getSeconds() : date.getSeconds();
+
+                return date.getFullYear() + "-" + month + "-" + currentDate + " " + hours + ":" + minutes + ":" + seconds;
+            }
+        }
+        /* 用户状态显示 */
+        function statusTools(row) {
+            if (row.status == '1') {
+                return '<i class=\"fa fa-toggle-off text-info fa-2x\" onclick="changeStatus(\'' + row.userId + '\')"></i> ';
+            } else {
+                return '<i class=\"fa fa-toggle-on text-info fa-2x\" onclick="changeStatus(\'' + row.userId + '\')"></i> ';
+            }
+        }
+        function changeStatus(userId) {
+            $.ajax({
+                url:"/system/user/changeStatus",
+                type:"post",
+                data: JSON.stringify(userId),
+                contentType:"application/json",
+                dataType:"json",
+                success:function (res) {
+                    window.location.href="/system/user";
+                }
+            })
+        }
+        function queryUserList() {
+            var options = {
+                sortName: "createTime",
+                sortOrder: "desc",
+                modalName: "用户",
+            };
+            $.table.init(options);
+        }
+    </script>
+</body>
+
+</html>

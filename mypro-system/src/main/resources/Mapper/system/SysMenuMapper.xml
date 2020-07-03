@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.mypro.system.mapper.ISysMenuMapper">
+
+    <resultMap id="menuResult" type="com.mypro.system.domain.SysMenu">
+        <id property="menuId" column="menu_id"/>
+        <result property="menuName" column="menu_name"/>
+        <result property="icon" column="icon"/>
+        <result property="parentId" column="parent_id"/>
+        <result property="orderNum" column="order_num"/>
+        <result property="url" column="url"/>
+        <result property="target" column="target"/>
+        <result property="menuType" column="menu_type"/>
+        <result property="visible" column="visible"/>
+        <result property="createBy" column="create_by"/>
+        <result property="createTime" column="create_time"/>
+        <result property="updateBy" column="update_by"/>
+        <result property="updateTime" column="update_time"/>
+        <result property="remark" column="remark"/>
+    </resultMap>
+
+    <select id="selectMenuByLoginName" resultMap="menuResult" >
+        select m.menu_id,m.menu_name,m.parent_id,m.order_num,m.url,m.target,m.menu_type,m.visible,m.perms,m.icon
+        from sys_menu m
+            left join sys_role_menu rm on rm.menu_id=m.menu_id
+            left join sys_user_role ur on ur.role_id=rm.role_id
+			left join sys_role r on r.role_id=ur.role_id
+            left join sys_user u on u.user_id=ur.user_id
+        where u.login_name=#{loginName} and m.menu_type in ('M','C') and r.status=0 and m.visible=0
+        order by m.parent_id,m.order_num
+    </select>
+
+    <select id="selectAllMenu" resultMap="menuResult">
+        select m.menu_id,m.menu_name,m.parent_id,m.order_num,m.url,m.target,m.menu_type,m.visible,m.perms,m.icon
+        from sys_menu m
+        where m.menu_type in ('M','C') and m.visible=0
+        order by m.parent_id,m.order_num
+    </select>
+</mapper>

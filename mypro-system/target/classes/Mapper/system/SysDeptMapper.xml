@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.mypro.system.mapper.ISysDeptMapper">
+
+    <resultMap id="deptResult" type="com.mypro.system.domain.SysDept">
+        <id     property="deptId"     column="dept_id"     />
+        <result property="parentId"   column="parent_id"   />
+        <result property="ancestors"  column="ancestors"   />
+        <result property="deptName"   column="dept_name"   />
+        <result property="orderNum"   column="order_num"   />
+        <result property="leader"     column="leader"      />
+        <result property="phone"      column="phone"       />
+        <result property="email"      column="email"       />
+        <result property="status"     column="status"      />
+        <result property="delFlag"    column="del_flag"    />
+        <result property="parentName" column="parent_name" />
+        <result property="createBy"   column="create_by"   />
+        <result property="createTime" column="create_time" />
+        <result property="updateBy"   column="update_by"   />
+        <result property="updateTime" column="update_time" />
+    </resultMap>
+
+    <select id="selectDeptById" resultMap="deptResult">
+        select d.*,(select dept_name from sys_dept where dept_id=d.parent_id ) as parent_name
+        from sys_dept d
+        where dept_id=#{deptId}
+    </select>
+    <select id="selectDeptByDept" resultMap="deptResult">
+        select * from sys_dept
+            where del_flag='0'
+        <if test="parentId != null and parent_id != ''" >
+            and parent_id=#{parentId}
+        </if>
+        <if test="deptName != null and deptName != ''" >
+            and dept_name=#{deptName}
+        </if>
+        <if test="status != null and status != ''" >
+            and status=#{status}
+        </if>
+        order by parent_id,order_num
+    </select>
+    <select id="selectDeptIdByDeptName" resultType="java.lang.Long">
+        select dept_id from sys_dept where dept_name=#{deptName}
+    </select>
+</mapper>
