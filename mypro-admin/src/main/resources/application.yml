@@ -21,7 +21,7 @@ spring:
     #使用哨兵模式
     sentinel:
       master: mymaster
-      nodes: 58.87.111.7:26379,58.87.111.7:26380,58.87.111.7:26381
+      nodes:
       password:
   thymeleaf:
     #关闭thymeleaf缓存
