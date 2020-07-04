@@ -5,16 +5,17 @@ import com.mypro.system.domain.SysUser;
 import com.mypro.system.service.ISysUserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.data.redis.core.RedisOperations;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.session.SessionInformation;
 import org.springframework.security.core.session.SessionRegistry;
 import org.springframework.security.core.userdetails.User;
 import org.springframework.session.FindByIndexNameSessionRepository;
 import org.springframework.session.Session;
 import org.springframework.session.data.redis.RedisIndexedSessionRepository;
-import org.springframework.session.data.redis.RedisOperationsSessionRepository;
-import org.springframework.session.data.redis.config.annotation.SpringSessionRedisOperations;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -38,11 +39,6 @@ public class OnlineController {
     @Autowired
     SessionRegistry sessionRegistry;
 
-    @Autowired
-    @Qualifier("objectRedisTemplate")
-    RedisTemplate<Object, Object> redisTemplate;
-
-
     @GetMapping()
     public String onlineUser(){
         return "/system/monitor/onlineUser";
@@ -62,11 +58,15 @@ public class OnlineController {
     @ResponseBody
     public String logout(@PathVariable Long id){
         SysUser sysUser = userService.selectUserByUserId(id);
-        RedisIndexedSessionRepository sessionRepository=new RedisIndexedSessionRepository(redisTemplate);
-        Map<String, ? extends Session> sessionMap = sessionRepository.findByIndexNameAndIndexValue(FindByIndexNameSessionRepository.PRINCIPAL_NAME_INDEX_NAME, sysUser.getLoginName());
-        Set<String> keySet = sessionMap.keySet();
-        for (String s : keySet) {
-            sessionRepository.deleteById(s);
+        List<Object> allPrincipals = sessionRegistry.getAllPrincipals();
+        for (Object allPrincipal : allPrincipals) {
+            User user=(User)allPrincipal;
+            if(user.getUsername().equals(sysUser.getLoginName())){
+                List<SessionInformation> allSessions = sessionRegistry.getAllSessions(allPrincipal, false);
+                for (SessionInformation session : allSessions) {
+                    session.expireNow();
+                }
+            }
         }
         return "ok";
     }

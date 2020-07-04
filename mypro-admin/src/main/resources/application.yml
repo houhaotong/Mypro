@@ -11,6 +11,8 @@ spring:
   #设置springSession
   session:
     store-type: redis
+    #设置过期时间
+    timeout: 10800
   redis:
     #lettuce配置
     lettuce:

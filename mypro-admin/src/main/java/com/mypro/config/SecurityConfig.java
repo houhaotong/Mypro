@@ -64,8 +64,8 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 //同时登陆多个只保留一个
                 .maximumSessions(1)
                 //过期session跳转
-                .expiredUrl("/login");
-
+                .expiredUrl("/login")
+                .sessionRegistry(sessionRegistry());
     }
 
     @Override
@@ -73,7 +73,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
         auth.userDetailsService(userService).passwordEncoder(new BCryptPasswordEncoder());
     }
 
-    /** 注册redisIndexSessionRe进入容器*/
+    /** 注册SessionRegistry*/
     @Bean
     public SessionRegistry sessionRegistry(){
         return new SessionRegistryImpl();

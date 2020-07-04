@@ -32,18 +32,8 @@ public class RedisConfig {
 
     @Bean("objectRedisTemplate")
     public RedisTemplate<Object,Object> objectRedisTemplate(RedisConnectionFactory redisConnectionFactory){
-        RedisTemplate<Object, Object> template=new RedisTemplate<>();
+        RedisTemplate<Object, Object> template = new RedisTemplate<>();
         template.setConnectionFactory(redisConnectionFactory);
-        //json序列化器
-        FastJsonRedisSerializer<Object> fastJsonRedisSerializer=new FastJsonRedisSerializer<Object>(Object.class);
-        //设置key序列化方式
-        template.setKeySerializer(new StringRedisSerializer());
-        //设置hash的key序列化方式
-        template.setHashKeySerializer(new StringRedisSerializer());
-        //设置value的序列化方式
-        template.setValueSerializer(fastJsonRedisSerializer);
-        //设置hash的value的序列化方式
-        template.setHashValueSerializer(fastJsonRedisSerializer);
         return template;
     }
 }
