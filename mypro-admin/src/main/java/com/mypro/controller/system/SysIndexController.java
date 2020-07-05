@@ -36,12 +36,14 @@ public class SysIndexController {
         SysUser user = userService.selectUserByLoginName(loginName);
         //获取在线人数
         int onlineNum=userService.getOnlineNum();
+        int pageView=userService.getPageView();
         //查询表单
         List<SysMenu> menus = menuService.selectMenuByLoginName(loginName, user.isAdmin());
         map.put("onlineNum",onlineNum);
         map.put("user",user);
         map.put("menus",menus);
         map.put("demoEnabled", Global.isDemoEnabled());
+        map.put("pageView",pageView);
         return "index";
     }
 

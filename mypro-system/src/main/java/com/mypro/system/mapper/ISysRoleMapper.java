@@ -22,4 +22,23 @@ public interface ISysRoleMapper {
      * @return 结果
      */
     public List<SysRole> selectRolesByUserId(Long userId);
+
+    /**
+     * 根据角色id查询
+     * @param roleId 角色id
+     * @return 信息
+     */
+    public SysRole selectRoleByRoleId(Long roleId);
+
+    /**
+     * 更新角色
+     * @param role 角色
+     */
+    public void updateRole(SysRole role);
+
+    /**
+     * 删除角色
+     * @param roleId 角色id
+     */
+    public void deleteByRoleId(Long roleId);
 }

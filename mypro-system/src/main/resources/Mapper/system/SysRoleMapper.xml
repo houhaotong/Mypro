@@ -17,6 +17,15 @@
         <result property="updateTime"   column="update_time"    />
         <result property="remark"       column="remark"         />
     </resultMap>
+    <update id="updateRole">
+        update sys_role set role_name=#{roleName},role_key=#{roleKey},role_Sort=#{roleSort},
+                            data_scope=#{dataScope},status=#{status},del_Flag=#{delFlag},update_by=#{updateBy},
+                            update_Time=#{updateTime},remark=#{remark}
+        where role_id=#{roleId}
+    </update>
+    <delete id="deleteByRoleId">
+        delete from sys_role where role_id=#{roleId}
+    </delete>
 
     <select id="selectAllRole" resultMap="SysRoleResult">
         select * from sys_role
@@ -25,5 +34,8 @@
         select r.* from sys_role r
             left join sys_user_role ur on ur.role_id=r.role_id
             where ur.user_id=#{userId}
+    </select>
+    <select id="selectRoleByRoleId" resultType="com.mypro.system.domain.SysRole">
+        select * from sys_role where role_id=#{roleId}
     </select>
 </mapper>

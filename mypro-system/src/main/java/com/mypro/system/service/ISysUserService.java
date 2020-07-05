@@ -68,4 +68,10 @@ public interface ISysUserService extends UserDetailsService {
      * @return 获取在线用户信息
      */
     public List<SysUser> getOnlineUser();
+
+    /**
+     * 获取访问量
+     * @return 访问量
+     */
+    public int getPageView();
 }

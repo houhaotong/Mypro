@@ -23,4 +23,10 @@ public interface ISysUserRoleMapper {
      * @return 结果
      */
     public int insertUserRole(List<SysUserRole> userRoles);
+
+    /**
+     * 根据roleId删除关联
+     * @param roleId 角色id
+     */
+    public void deleteUserRoleByRoleId(Long roleId);
 }

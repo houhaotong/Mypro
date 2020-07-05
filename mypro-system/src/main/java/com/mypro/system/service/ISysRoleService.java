@@ -22,4 +22,23 @@ public interface ISysRoleService {
      * @return 结果
      */
     public List<SysRole> selectRolesByUserId(Long userId);
+
+    /**
+     * 根据角色Id查询角色
+     * @param roleId 角色id
+     * @return 角色信息
+     */
+    public SysRole selectRoleByRoleId(Long roleId);
+
+    /**
+     * 更新角色
+     * @param role 角色
+     */
+    public void updateRole(SysRole role);
+
+    /**
+     *删除角色
+     * @param ids id字符串
+     */
+    public void deleteByRoleIds(String ids);
 }

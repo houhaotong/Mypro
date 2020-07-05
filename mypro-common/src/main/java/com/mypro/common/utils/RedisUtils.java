@@ -152,4 +152,12 @@ public final class RedisUtils {
     public Set<Object> zRange(String key,long start,long end) {
         return redisTemplate.opsForZSet().range(key,start,end);
     }
+
+    /**
+     * 自增1
+     * @param key 键
+     */
+    public int incr(String key) {
+        return redisTemplate.opsForValue().increment(key).intValue();
+    }
 }

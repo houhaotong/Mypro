@@ -70,6 +70,9 @@ public class SysUserServiceImpl implements ISysUserService {
         redisUtils.zRemByScore("onlineUser",0,DateUtils.getDateStamp()-1);
         //更新最后登录时间
         user.setLoginDate(new Date());
+        updateUser(user);
+        //增加访问量
+        redisUtils.incr("pageView");
     }
 
     @Override
@@ -190,6 +193,15 @@ public class SysUserServiceImpl implements ISysUserService {
             users.add(user);
         }
         return users;
+    }
+
+    @Override
+    public int getPageView() {
+        Object pageView = redisUtils.get("pageView");
+        if(pageView!=null){
+            return (int)pageView;
+        }
+        return 0;
     }
 
     /**
