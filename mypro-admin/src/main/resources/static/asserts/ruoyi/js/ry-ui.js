@@ -1027,6 +1027,19 @@ var table = {
             	table.set();
             	$.modal.openTab("修改" + table.options.modalName, $.operate.editUrl(id));
             },
+			//购买商品页面，以tab页展现
+			buyTab: function(id){
+        		table.set();
+        		$.modal.openTab("购买"+table.options.modalName,$.operate.buyUrl(id));
+			},
+			// 购买访问地址
+			buyUrl: function(id) {
+				var url = "/404.html";
+				if ($.common.isNotEmpty(id)) {
+					url = table.options.buyUrl.replace("{id}", id);
+				}
+				return url;
+			},
             // 修改信息 全屏
             editFull: function(id) {
             	table.set();

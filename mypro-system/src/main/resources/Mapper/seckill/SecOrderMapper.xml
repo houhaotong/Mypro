@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.mypro.system.mapper.ISecOrderMapper">
+    <resultMap id="orderResult" type="com.mypro.system.domain.SecOrder">
+        <id property="orderId" column="order_id"/>
+        <result property="itemId" column="item_id"/>
+        <result property="userId" column="user_id"/>
+        <result property="createTime" column="create_time"/>
+        <result property="isdone" column="isdone"/>
+        <result property="updateBy" column="update_by"/>
+    </resultMap>
+
+    <insert id="insertOrder">
+        insert into seckill_order (order_id,item_id, user_id, create_time, isdone, update_by) VALUES (#{orderId},#{itemId},#{userId},#{createTime},#{isdone},#{updateBy})
+    </insert>
+    <select id="selectOrderByOrderId" resultMap="orderResult">
+        select * from seckill_order where order_id=#{orderId}
+    </select>
+    <select id="selectOrderByUserId" resultMap="orderResult">
+        select * from seckill_order where user_id=#{userId}
+    </select>
+</mapper>

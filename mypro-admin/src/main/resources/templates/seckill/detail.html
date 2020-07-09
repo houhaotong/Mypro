@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="zh" xmlns:th="http://www.thymeleaf.org">
+
+<head>
+
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+
+    <title>商品详情</title>
+    <link rel="shortcut icon" th:href="@{/asserts/favicon.ico}">
+    <link th:href="@{/asserts/css/bootstrap.min.css}" rel="stylesheet">
+    <link th:href="@{/asserts/css/font-awesome.css}" rel="stylesheet">
+    <link th:href="@{/asserts/css/plugins/bootstrap-table/bootstrap-table.min.css}" rel="stylesheet">
+    <link th:href="@{/asserts/css/animate.css}" rel="stylesheet">
+    <link th:href="@{/asserts/css/style.css}" rel="stylesheet">
+    <link th:href="@{/asserts/css/plugins/switchery/switchery.css}" rel="stylesheet">
+
+</head>
+
+<body class="gray-bg">
+<div class="wrapper wrapper-content animated fadeInRight">
+
+    <!-- Panel Other -->
+    <div class="ibox float-e-margins">
+        <div class="ibox-title">
+            <h5>商品详情</h5>
+        </div>
+        <div class="ibox-content">
+            <div>
+                <img th:src="@{'/asserts/img/'+${item.img}+'.jpg'}">
+            </div>
+            <div class="detail">
+                商品名称：<span th:text="${item.itemName}"></span><br/>
+                商品库存:<span th:text="${item.itemStock}"></span><br/>
+                商品价格:<span th:text="${item.price}"></span><br/>
+                <a th:if="${item.isok}=='1'" class="btn btn-success btn-large" href="javascript:void(0)" th:onclick="'kill('+${item.itemId}+')'"><i
+                        class="fa fa-shopping-cart"></i>抢购</a>
+                <a th:if="${item.isok}=='0'" class="btn btn-success btn-large" href="javascript:void(0)"><i
+                        class="fa fa-shopping-cart"></i>库存不足或不在抢购时间内</a>
+            </div>
+        </div>
+    </div>
+</div>
+<th:block th:include="include::footer"/>
+</body>
+<script th:src="@{/webjars/jquery/3.5.1/jquery.js}"></script>
+<script th:src="@{/asserts/ajax/libs/layer/layer.min.js}"></script>
+<script>
+    function kill(itemId) {
+        $.ajax({
+            url:'/seckill/item/'+itemId,
+            type:'post',
+            success:function (res) {
+                layer.alert(res,function () {
+                    window.parent.location.reload();
+                });
+            },
+            error:function () {
+                layer.alert("提交失败!");
+            }
+        })
+    }
+
+</script>
+</html>

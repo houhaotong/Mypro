@@ -34,7 +34,7 @@ spring:
   datasource:
     username: root
     password: 123456
-    url: jdbc:mysql://localhost:3306/mypro
+    url: jdbc:mysql://localhost:3306/mypro?useAffectedRows=true
     driver-class-name: com.mysql.cj.jdbc.Driver
     #使用druid数据源
     type: com.alibaba.druid.pool.DruidDataSource

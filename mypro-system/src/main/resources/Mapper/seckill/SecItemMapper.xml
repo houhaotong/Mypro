@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.mypro.system.mapper.ISecItemMapper">
+
+    <resultMap id="itemResult" type="com.mypro.system.domain.SecItem">
+        <id property="itemId" column="item_id"/>
+        <result property="itemName" column="item_name"/>
+        <result property="itemStock" column="item_stock"/>
+        <result property="startTime" column="start_time"/>
+        <result property="endTime" column="end_time"/>
+        <result property="isActive" column="isActive"/>
+        <result property="isok" column="isok"/>
+        <result property="price" column="price"/>
+        <result property="img" column="img"/>
+    </resultMap>
+    <update id="updateItem">
+        update seckill_item set item_name=#{itemName},item_stock=#{itemStock},start_time=#{startTime}
+                                ,end_time=#{endTime},isActive=#{isActive},price=#{price},img=#{img}
+        where item_id=#{itemId}
+    </update>
+
+    <select id="selectAll" resultMap="itemResult">
+        select * from seckill_item
+        where isactive = '1'
+    </select>
+    <select id="selectItemByItemId" resultMap="itemResult">
+        select * from seckill_item
+        where isactive = '1' and item_id=#{itemId}
+    </select>
+</mapper>

@@ -2,10 +2,13 @@
   <dictionary name="houhaotong">
     <words>
       <w>ipaddr</w>
+      <w>isdone</w>
+      <w>isok</w>
       <w>jedis</w>
       <w>loginname</w>
       <w>mypro</w>
       <w>phonenumber</w>
+      <w>seckill</w>
     </words>
   </dictionary>
 </component>
