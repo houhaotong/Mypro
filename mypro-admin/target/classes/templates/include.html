@@ -6,7 +6,7 @@
     <meta name="keywords" content="">
     <meta name="description" content="">
     <title th:text="${title}"></title>
-    <link rel="shortcut icon" href="favicon.ico">
+    <link rel="shortcut icon" th:href="@{/asserts/favicon.ico}">
     <link th:href="@{/asserts/css/bootstrap.min.css}" rel="stylesheet"/>
     <link th:href="@{/asserts/css/font-awesome.min.css}" rel="stylesheet"/>
     <!-- bootstrap-table 表格插件样式 -->
@@ -33,7 +33,6 @@
 <!-- 通用JS -->
 <div th:fragment="footer">
     <a id="scroll-up" href="#" class="btn btn-sm display"><i class="fa fa-angle-double-up"></i></a>
-    <script th:src="@{/asserts/js/jquery.min.js}"></script>
     <script th:src="@{/webjars/jquery/3.5.1/jquery.js}"></script>
     <script th:src="@{/asserts/js/bootstrap.min.js}"></script>
     <!-- bootstrap-table 表格插件 -->
@@ -56,7 +55,7 @@
     <script th:src="@{/asserts/ajax/libs/iCheck/icheck.min.js}"></script>
     <script th:src="@{/asserts/ajax/libs/layer/layer.min.js}"></script>
     <script th:src="@{/asserts/ajax/libs/layui/layui.js}"></script>
-    <script th:src="@{/asserts/ruoyi/js/common.js?v=4.2.0}"></script>
-    <script th:src="@{/asserts/ruoyi/js/ry-ui.js?v=4.2.0}"></script>
+    <script th:src="@{/asserts/ruoyi/js/common.js}"></script>
+    <script th:src="@{/asserts/ruoyi/js/ry-ui.js}"></script>
     <script th:inline="javascript"> var ctx = [[@{/asserts/}]]; </script>
 </div>

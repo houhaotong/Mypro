@@ -8,8 +8,10 @@ import com.mypro.system.domain.SysUser;
 import com.mypro.system.mapper.ISecItemMapper;
 import com.mypro.system.mapper.ISecOrderMapper;
 import com.mypro.system.mapper.ISysUserMapper;
+import com.mypro.system.service.IRabbitSendService;
 import com.mypro.system.service.ISecService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -32,6 +34,9 @@ public class SecServiceImpl implements ISecService {
 
     @Autowired
     ISecOrderMapper orderMapper;
+
+    @Autowired
+    IRabbitSendService sendService;
 
     @Override
     public List<SecItem> selectAll() {
@@ -96,6 +101,7 @@ public class SecServiceImpl implements ISecService {
         order.setUserId(userId);
         if (updateStock(item, 1)){
             orderMapper.insertOrder(order);
+            sendService.sendMsg(order.getOrderId());
             return true;
         }
         return false;

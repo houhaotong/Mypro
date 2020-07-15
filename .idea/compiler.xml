@@ -7,6 +7,7 @@
         <sourceTestOutputDir name="target/generated-test-sources/test-annotations" />
         <outputRelativeToContentRoot value="true" />
         <module name="mypro-admin" />
+        <module name="test" />
         <module name="mypro-common" />
         <module name="mypro-system" />
       </profile>
@@ -16,6 +17,7 @@
       <module name="mypro-admin" target="1.8" />
       <module name="mypro-common" target="1.8" />
       <module name="mypro-system" target="1.8" />
+      <module name="test" target="1.8" />
     </bytecodeTargetLevel>
   </component>
   <component name="JavacSettings">
@@ -24,6 +26,7 @@
       <module name="mypro-admin" options="-parameters" />
       <module name="mypro-common" options="-parameters" />
       <module name="mypro-system" options="-parameters" />
+      <module name="test" options="-parameters" />
     </option>
   </component>
 </project>

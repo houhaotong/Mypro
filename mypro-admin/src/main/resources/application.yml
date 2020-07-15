@@ -74,3 +74,40 @@ spring:
           # 慢SQL记录,超过一秒会记录，这里是关闭状态
           log-slow-sql: false
           slow-sql-millis: 1000
+  #配置rabbitmq
+  rabbitmq:
+    host: localhost
+    port: 5672
+    username: user
+    password: 123456
+    virtual-host: /vhost_test
+    #开启生产者消息确认
+    publisher-confirm-type: correlated
+    #开启生产者消息是否分发到队列回调，只有发送到队列失败时，才会触发回调
+    publisher-returns: true
+    template:
+      #设置开启后，会强制回调，不管是否发送失败
+      mandatory: true
+    listener:
+      simple:
+        #监听器调用程序线程的最大数量
+        max-concurrency: 15
+        #监听器调用程序线程的最小数量
+        concurrency: 5
+        #每个消费者未完成的最大未确认消息数
+        prefetch: 10
+#自己的rabbitmq所需的配置
+mq:
+  myrabbit:
+    #邮件发送消息模型
+    email:
+      queue: seckill.email.queue
+      exchange: seckill.email.exchange
+      routing-key: seckill.email.routingKey
+    #死信消息模型
+    dead:
+      queue: seckill.dead.queue
+      exchange: seckill.dead.exchange
+      routing-key: seckill.dead.routingKey
+    #设置过期时间
+    expire: 1800000

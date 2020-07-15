@@ -7,8 +7,10 @@
       <w>jedis</w>
       <w>loginname</w>
       <w>mypro</w>
+      <w>myrabbit</w>
       <w>phonenumber</w>
       <w>seckill</w>
+      <w>unconfirm</w>
     </words>
   </dictionary>
 </component>
