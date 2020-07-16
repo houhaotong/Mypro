@@ -96,6 +96,11 @@ spring:
         concurrency: 5
         #每个消费者未完成的最大未确认消息数
         prefetch: 10
+  #配置邮件发送
+  mail:
+    host: smtp.126.com
+    username: houhaotong@126.com
+    password: OAJFKDISCBDVRGJE
 #自己的rabbitmq所需的配置
 mq:
   myrabbit:
@@ -111,3 +116,10 @@ mq:
       routing-key: seckill.dead.routingKey
     #设置过期时间
     expire: 1800000
+#邮件信息设置
+seckill:
+  mail:
+    send-from: houhaotong@126.com
+    subject: 商品抢购成功
+    content: 您好，您已成功抢购到商品：%s,复制该链接到浏览器打开，查看抢购订单详情：http://localhost:8088/seckill/order/%s,并在1小时内支付订单，否则将会取消订单。
+    send-to: 495733684@qq.com

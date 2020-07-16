@@ -1,6 +1,7 @@
 package com.mypro.system.mapper;
 
 import com.mypro.system.domain.SecOrder;
+import com.mypro.system.domain.SecOrderAndUserInfo;
 
 import java.util.List;
 
@@ -22,6 +23,13 @@ public interface ISecOrderMapper {
      * @return 结果
      */
     public SecOrder selectOrderByOrderId(String orderId);
+
+    /**
+     * 通过订单id查找包括用户信息
+     * @param orderId 订单id
+     * @return 结果
+     */
+    public SecOrderAndUserInfo selectOrderAndUserByOrderId(String orderId);
 
     /**
      * 通过用户id查找订单
