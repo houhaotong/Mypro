@@ -15,17 +15,20 @@ import org.springframework.ui.ModelMap;
 import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 /**
  * 用户控制器
+ *
  * @author houhaotong
  */
 @Controller
 @RequestMapping("/system/user")
 public class SysUserController extends BaseController {
 
-    private final String prefix="/system/user/";
+    private final String prefix = "/system/user/";
 
     @Autowired
     private ISysUserService userService;
@@ -40,34 +43,36 @@ public class SysUserController extends BaseController {
      * 获取所有用户页面
      */
     @GetMapping()
-    public String allUser(){
+    public String allUser() {
         return "/system/user/user";
     }
 
     @GetMapping("/all")
     @ResponseBody
-    public String selectAll(){
+    public String selectAll() {
         List<SysUser> users = userService.selectAllUser();
         String s = JSON.toJSONString(users);
         return s;
     }
+
     /**
      * 修改用户页面
      */
     @GetMapping("/{id}")
-    public String userById(ModelMap map, @PathVariable("id") Long userId){
+    public String userById(ModelMap map, @PathVariable("id") Long userId) {
         SysUser user = userService.selectUserByUserId(userId);
         List<SysRole> roles = roleService.selectRolesByUserId(userId);
-        map.addAttribute("user",user);
-        map.addAttribute("roles",roles);
+        map.addAttribute("user", user);
+        map.addAttribute("roles", roles);
         return "/system/user/edit";
     }
+
     /**
      * 修改保存用户
      */
     @ResponseBody
     @PostMapping("/edit")
-    public String updateUser(SysUser user, HttpServletRequest request){
+    public String updateUser(SysUser user, HttpServletRequest request) {
         user.setUpdateBy(SecurityUtils.getCurrentUserName(getRequest()));
         userService.updateUser(user);
         return "ok";
@@ -78,9 +83,9 @@ public class SysUserController extends BaseController {
      */
     @ResponseBody
     @PostMapping("/changeStatus")
-    public String changeStatus(@RequestBody Long userId){
+    public String changeStatus(@RequestBody Long userId) {
         SysUser user = userService.selectUserByUserId(userId);
-        String status="1".equals(user.getStatus())?"0":"1";
+        String status = "1".equals(user.getStatus()) ? "0" : "1";
         user.setStatus(status);
         userService.updateUser(user);
         String done = JSON.toJSONString("change done");
@@ -88,28 +93,28 @@ public class SysUserController extends BaseController {
     }
 
     /**
-     *删除用户
+     * 删除用户
      */
     @PostMapping("/delete")
     @ResponseBody
-    public String deleteByUserIds(String ids){
+    public String deleteByUserIds(String ids) {
         userService.deleteByUserIds(ids);
         return "done";
     }
 
     @GetMapping("/add")
-    public String add(ModelMap map){
+    public String add(ModelMap map) {
         List<SysRole> roles = roleService.selectAllRole();
-        map.addAttribute("roles",roles);
+        map.addAttribute("roles", roles);
         return "/system/user/add";
     }
 
     @PostMapping("/add")
     @ResponseBody
-    public ModelMap insertSave(SysUser user){
+    public ModelMap insertSave(SysUser user) {
         ModelMap map = new ModelMap();
-        if(!userService.checkLoginNameUnique(user.getLoginName())){
-            map.put("error","登录名重复");
+        if (!userService.checkLoginNameUnique(user.getLoginName())) {
+            map.put("error", "登录名重复");
             return map;
         }
         Long deptId = deptService.selectDeptIdByDeptName(user.getDeptName());
@@ -118,7 +123,29 @@ public class SysUserController extends BaseController {
         user.setPassword(new BCryptPasswordEncoder().encode(user.getPassword()));
         user.setCreateBy(SecurityUtils.getCurrentUserName(getRequest()));
         userService.insertUser(user);
-        map.put("res","done");
+        map.put("res", "done");
         return map;
+    }
+
+    @GetMapping("/resetPwd")
+    public String resetPwd(ModelMap map) {
+        String loginName = SecurityUtils.getCurrentUserName(getRequest());
+        SysUser user = userService.selectUserByLoginName(loginName);
+        Long userId = user.getUserId();
+        map.addAttribute("userId", userId);
+        return "/system/user/resetPwd";
+    }
+
+    @PostMapping("/resetPwd")
+    @ResponseBody
+    public String resetPwd(@RequestParam Map<String, String> map) {
+        Long userId = Long.valueOf(map.get("userId"));
+        String oldPwd =map.get("oldPwd");
+        String newPwd =map.get("newPwd");
+        if (userService.updatePassword(userId,oldPwd,newPwd)) {
+            return "修改成功";
+        }else {
+            return "原密码不正确";
+        }
     }
 }

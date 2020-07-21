@@ -1,0 +1,13 @@
+<component name="libraryTable">
+  <library name="Maven: org.webjars.bower:jquery-validation:1.19.2">
+    <CLASSES>
+      <root url="jar://D:/Maven/LocalJar/org/webjars/bower/jquery-validation/1.19.2/jquery-validation-1.19.2.jar!/" />
+    </CLASSES>
+    <JAVADOC>
+      <root url="jar://D:/Maven/LocalJar/org/webjars/bower/jquery-validation/1.19.2/jquery-validation-1.19.2-javadoc.jar!/" />
+    </JAVADOC>
+    <SOURCES>
+      <root url="jar://D:/Maven/LocalJar/org/webjars/bower/jquery-validation/1.19.2/jquery-validation-1.19.2-sources.jar!/" />
+    </SOURCES>
+  </library>
+</component>

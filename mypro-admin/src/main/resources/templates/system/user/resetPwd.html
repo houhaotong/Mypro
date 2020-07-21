@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="zh" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>修改密码</title>
+    <link th:href="@{/asserts/css/bootstrap.min.css}" rel="stylesheet"/>
+    <link th:href="@{/asserts/ajax/libs/bootstrap-table/bootstrap-table.min.css}" rel="stylesheet"/>
+    <link th:href="@{/asserts/css/validation.css}" rel="stylesheet"/>
+    <style type="text/css">
+        .resetPwd{
+            width: 500px;
+            margin: auto;
+        }
+    </style>
+</head>
+<body>
+<div class="resetPwd">
+    <form class="form-horizontal" id="resetForm" role="form">
+        <div class="form-group">
+            <input type="hidden" name="userId" th:value="${userId}">
+            <label for="oldPwd">原密码：&nbsp;&nbsp;&nbsp;</label><input id="oldPwd" type="password" name="oldPwd">
+        </div>
+        <div class="form-group">
+            <label for="newPwd">新密码：&nbsp;&nbsp;&nbsp; </label><input id="newPwd" type="password" name="newPwd">
+        </div>
+        <div class="form-group">
+            <label for="confirmPwd">确认密码：</label><input id="confirmPwd" type="password" name="confirmPwd">
+        </div>
+        <input type="submit" class="btn btn-default" value="登录">
+    </form>
+</div>
+</body>
+<script th:src="@{/webjars/jquery/3.5.1/jquery.js}"></script>
+<script th:src="@{/asserts/js/bootstrap.min.js}"></script>
+<script th:src="@{/webjars/jquery-validation/1.19.2/dist/jquery.validate.js}"></script>
+<script th:src="@{/webjars/jquery-validation/1.19.2/dist/localization/messages_zh.js}"></script>
+<script th:src="@{/webjars/jquery-form/4.2.2/jquery.form.min.js}"></script>
+<script th:src="@{/asserts/ajax/libs/layer/layer.min.js}"></script>
+
+<script>
+    $(function () {
+        var ajaxOptions={
+            type:"post",
+            url:"/system/user/resetPwd",
+            dataType:"JSON",
+            success:function (res) {
+                close(res);
+            }
+        }
+        $("#resetForm").validate({
+            rules: {
+                oldPwd:"required",
+                newPwd:"required",
+                confirmPwd: {
+                    required:true,
+                    equalTo:"#newPwd"
+                }
+            },
+            messages: {
+                oldPwd:"请输入原密码",
+                newPwd:"请输入新密码",
+                confirmPwd:"两次输入密码不一致"
+            },
+            submitHandler: function (form) {
+                $(form).ajaxSubmit(ajaxOptions);
+            }
+        })
+    })
+    function close(res) {
+        layer.alert(res,function () {
+            window.parent.location.reload();
+        });
+    }
+</script>
+</html>

@@ -1040,6 +1040,19 @@ var table = {
 				}
 				return url;
 			},
+			//详情页面，tab页
+			detailTab: function(id){
+				table.set();
+				$.modal.openTab(table.options.modalName+"详情",$.operate.MyDetailUrl(id));
+			},
+			// 详情访问地址
+			MyDetailUrl: function(id) {
+				var url = "/404.html";
+				if ($.common.isNotEmpty(id)) {
+					url = table.options.detailUrl.replace("{id}", id);
+				}
+				return url;
+			},
             // 修改信息 全屏
             editFull: function(id) {
             	table.set();

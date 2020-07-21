@@ -14,10 +14,12 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 
+import javax.validation.constraints.NotNull;
 import java.util.*;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
@@ -202,6 +204,37 @@ public class SysUserServiceImpl implements ISysUserService {
             return (int)pageView;
         }
         return 0;
+    }
+
+    /**
+     * 判断和数据库中密码是否一致
+     * @param originPwd 原始密码
+     * @param pwd 密码
+     * @return true一致
+     */
+    @NotNull
+    public boolean pwdIsRightOrNot(String originPwd, String pwd) {
+        return new BCryptPasswordEncoder().matches(pwd,originPwd);
+    }
+
+    @Override
+    public boolean updatePassword(Long userId,String oldPwd, String newPwd) {
+        SysUser user = userMapper.selectUserByUserId(userId);
+        if (user!=null){
+            //旧密码匹配则修改新密码
+            if (pwdIsRightOrNot(user.getPassword(),oldPwd)){
+                user.setPassword(new BCryptPasswordEncoder().encode(newPwd));
+                updateUser(user);
+                return true;
+            }
+        }
+        return false;
+    }
+
+    @Override
+    public Long selectUserIdByLoginName(String loginName) {
+        SysUser user = selectUserByLoginName(loginName);
+        return user.getUserId();
     }
 
     /**

@@ -37,4 +37,5 @@ public class SecurityUtils {
     public static String getCurrentUserName(HttpServletRequest request){
          return getCurrentPrincipal(request).getUsername();
     }
+
 }

@@ -11,4 +11,10 @@ public interface IRabbitSendService {
      * @param msg 消息体
      */
     public void sendMsg(String msg);
+
+    /**
+     * 发送死信
+     * @param msg 消息体
+     */
+    public void sendDeadMsg(String msg);
 }

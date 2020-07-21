@@ -111,15 +111,18 @@ mq:
       routing-key: seckill.email.routingKey
     #死信消息模型
     dead:
-      queue: seckill.dead.queue
       exchange: seckill.dead.exchange
       routing-key: seckill.dead.routingKey
-    #设置过期时间
+      normal-queue: seckill.dead.normal.queue
+      normal-exchange: seckill.dead.normal.exchange
+      normal-routing-key: seckill.dead.normal.routingKey
+      real-dead-queue: seckill.dead.queue
+    #设置过期时间（30分钟）
     expire: 1800000
 #邮件信息设置
 seckill:
   mail:
     send-from: houhaotong@126.com
     subject: 商品抢购成功
-    content: 您好，您已成功抢购到商品：%s,复制该链接到浏览器打开，查看抢购订单详情：http://localhost:8088/seckill/order/%s,并在1小时内支付订单，否则将会取消订单。
+    content: "您好，您已成功抢购到商品：<strong style='color: red'>%s</strong>,复制该链接到浏览器打开，查看抢购订单详情：http://localhost:8088/seckill/order/%s ,并在1小时内支付订单，否则将会取消订单。"
     send-to: 495733684@qq.com

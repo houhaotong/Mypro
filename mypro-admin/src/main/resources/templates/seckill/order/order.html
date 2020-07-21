@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html  lang="zh" xmlns:th="http://www.thymeleaf.org">
+
+<head>
+
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+
+    <title>商品抢购</title>
+    <link rel="shortcut icon" th:href="@{/asserts/favicon.ico}">
+    <link th:href="@{/asserts/css/bootstrap.min.css}" rel="stylesheet">
+    <link th:href="@{/asserts/css/font-awesome.css}" rel="stylesheet">
+    <link th:href="@{/asserts/css/plugins/bootstrap-table/bootstrap-table.min.css}" rel="stylesheet">
+    <link th:href="@{/asserts/css/animate.css}" rel="stylesheet">
+    <link th:href="@{/asserts/css/style.css}" rel="stylesheet">
+    <link th:href="@{/asserts/css/plugins/switchery/switchery.css}" rel="stylesheet">
+
+</head>
+
+<body class="gray-bg">
+    <div class="wrapper wrapper-content animated fadeInRight">
+
+        <!-- Panel Other -->
+        <div class="ibox float-e-margins">
+            <div class="ibox-title">
+                <h5>现有商品信息</h5>
+            </div>
+
+            <div class="ibox-content">
+                <div class="row row-lg">
+                    <div class="col-sm-12">
+                        <div class="example-wrap">
+                            <div class="example">
+                                <table id="table">
+
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <th:block th:include="include::footer" />
+
+    <script>
+        var prefix ="/seckill/order";
+        $(function () {
+            queryUserList();
+        })
+        $("#table").bootstrapTable({
+            url:"/seckill/order/all",
+            columns:[
+                {
+                title: '订单ID',
+                field: 'orderId'
+                },
+                {
+                    title: '商品名称',
+                    field:'itemName'
+                },
+                {
+                    title: '订单金额',
+                    field: 'price'
+                },
+                {
+                    title: '创建时间',
+                    field: 'createTime',
+                    //获取日期列的值进行转换
+                    formatter: function (value, row, index) {
+                        return changeDateFormat(value);
+                    }
+                },
+                {
+                    title: '订单状态',
+                    field: 'state',
+                    //获取日期列的值进行转换
+                    formatter: function (value, row, index) {
+                        return statusTools(row);
+                    }
+                },
+                {
+                    title: '操作',
+                    align: 'center',
+                    formatter: function(value, row, index) {
+                        return detailTools(row);
+                    }
+                }]
+        })
+        function changeDateFormat(cellval) {
+            var dateVal = cellval + "";
+            if (cellval != null) {
+                var date = new Date(parseInt(dateVal.replace("/Date(", "").replace(")/", ""), 10));
+                var month = date.getMonth() + 1 < 10 ? "0" + (date.getMonth() + 1) : date.getMonth() + 1;
+                var currentDate = date.getDate() < 10 ? "0" + date.getDate() : date.getDate();
+
+                var hours = date.getHours() < 10 ? "0" + date.getHours() : date.getHours();
+                var minutes = date.getMinutes() < 10 ? "0" + date.getMinutes() : date.getMinutes();
+                var seconds = date.getSeconds() < 10 ? "0" + date.getSeconds() : date.getSeconds();
+
+                return date.getFullYear() + "-" + month + "-" + currentDate + " " + hours + ":" + minutes + ":" + seconds;
+            }
+        }
+        /* 订单详情 */
+        function detailTools(row) {
+            return '<a class="btn btn-success btn-large" href="javascript:void(0)" onclick="$.operate.detailTab(\'' + row.orderId + '\')"><i class="fa fa-shopping-cart"></i>订单详情</a> ';
+        }
+        /* 订单状态显示 */
+        function statusTools(row) {
+            if (row.state == '0') {
+                return '未支付';
+            }if (row.state=='1') {
+                return '已支付';
+            }else{
+                return '已取消';
+            }
+        }
+        function queryUserList() {
+            var options = {
+                detailUrl:prefix+"/{id}",
+                sortName: "createTime",
+                sortOrder: "desc",
+                modalName: "订单",
+            };
+            $.table.init(options);
+        }
+
+    </script>
+</body>
+
+</html>

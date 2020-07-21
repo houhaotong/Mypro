@@ -17,6 +17,7 @@ import org.springframework.stereotype.Service;
 
 /**
  * 邮件发送服务
+ *
  * @author houhaotong
  */
 @Service
@@ -35,24 +36,45 @@ public class EmailRabbitSendServiceImpl implements IRabbitSendService {
 
     @Override
     public void sendMsg(String orderId) {
-        log.info("秒杀成功--开始发送邮件消息，{}",orderId);
+        log.info("秒杀成功--开始发送邮件消息，{}", orderId);
         try {
-            if (orderId!=null){
-                SecOrderAndUserInfo orderAndUserInfo = orderMapper.selectOrderAndUserByOrderId(orderId);
-                if (orderAndUserInfo!=null){
-                    rabbitTemplate.convertAndSend(myRabbitProperties.getEmail().getExchange(), myRabbitProperties.getEmail().getRoutingKey(), orderAndUserInfo, new MessagePostProcessor() {
-                        @Override
-                        public Message postProcessMessage(Message message) throws AmqpException {
-                            MessageProperties messageProperties = message.getMessageProperties();
-                            //设置消息的持久化
-                            messageProperties.setDeliveryMode(MessageDeliveryMode.PERSISTENT);
-                            return message;
-                        }
-                    });
-                }
+            SecOrderAndUserInfo orderAndUserInfo = orderMapper.selectOrderAndUserByOrderId(orderId);
+            if (orderAndUserInfo != null) {
+                rabbitTemplate.convertAndSend(myRabbitProperties.getEmail().getExchange(), myRabbitProperties.getEmail().getRoutingKey(), orderAndUserInfo, new MessagePostProcessor() {
+                    @Override
+                    public Message postProcessMessage(Message message) throws AmqpException {
+                        MessageProperties messageProperties = message.getMessageProperties();
+                        //设置消息的持久化
+                        messageProperties.setDeliveryMode(MessageDeliveryMode.PERSISTENT);
+                        return message;
+                    }
+                });
             }
-        }catch (Exception e){
-           log.error("秒杀成功--发送邮件消息异常，消息为：{}",orderId);
+        } catch (Exception e) {
+            log.error("秒杀成功--发送邮件消息异常，消息为：{}", orderId);
+        }
+    }
+
+    @Override
+    public void sendDeadMsg(String orderId) {
+        log.info("开始发送死信消息！");
+        try {
+            SecOrderAndUserInfo orderAndUserInfo = orderMapper.selectOrderAndUserByOrderId(orderId);
+            if (orderAndUserInfo!=null) {
+                rabbitTemplate.convertAndSend(myRabbitProperties.getDead().getNormalExchange(), myRabbitProperties.getDead().getNormalRoutingKey(), orderAndUserInfo, new MessagePostProcessor() {
+                    @Override
+                    public Message postProcessMessage(Message message) throws AmqpException {
+                        MessageProperties messageProperties = message.getMessageProperties();
+                        //设置过期时间TTL
+                        messageProperties.setExpiration(String.valueOf(myRabbitProperties.getExpire()));
+                        //设置持久化
+                        messageProperties.setDeliveryMode(MessageDeliveryMode.PERSISTENT);
+                        return message;
+                    }
+                });
+            }
+        } catch (Exception e) {
+            log.error("死信消息发送异常，消息为：{}", orderId);
         }
     }
 }

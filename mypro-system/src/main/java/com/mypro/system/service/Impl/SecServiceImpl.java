@@ -1,9 +1,9 @@
 package com.mypro.system.service.Impl;
 
-import com.alibaba.druid.sql.visitor.functions.If;
 import com.mypro.common.utils.SecKillUtils;
 import com.mypro.system.domain.SecItem;
 import com.mypro.system.domain.SecOrder;
+import com.mypro.system.domain.SecOrderAndUserInfo;
 import com.mypro.system.domain.SysUser;
 import com.mypro.system.mapper.ISecItemMapper;
 import com.mypro.system.mapper.ISecOrderMapper;
@@ -11,7 +11,6 @@ import com.mypro.system.mapper.ISysUserMapper;
 import com.mypro.system.service.IRabbitSendService;
 import com.mypro.system.service.ISecService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -68,6 +67,34 @@ public class SecServiceImpl implements ISecService {
         return false;
     }
 
+    @Override
+    public SecOrderAndUserInfo selectOrderByOrderId(String orderId) {
+        return orderMapper.selectOrderAndUserByOrderId(orderId);
+    }
+
+    @Override
+    public boolean orderPay(String orderId) {
+        SecOrder order = orderMapper.selectOrderByOrderId(orderId);
+        if (order.getState()=='0') {
+            if (order != null) {
+                SysUser user = userMapper.selectUserByUserId(order.getUserId());
+                if (user != null) {
+                    user.setMoney(user.getMoney() - order.getPrice());
+                    order.setState('1');
+                    orderMapper.updateOrder(order);
+                    userMapper.updateByUser(user);
+                    return true;
+                }
+            }
+        }
+        return false;
+    }
+
+    @Override
+    public List<SecOrderAndUserInfo> selectOrdersByUserId(Long userId) {
+        return orderMapper.selectOrdersAndUserByUserId(userId);
+    }
+
     /**
      * 判断是否买过同一个商品
      * @param userId 用户id
@@ -95,13 +122,17 @@ public class SecServiceImpl implements ISecService {
     public boolean generateOrder(SecItem item,Long userId){
         SecOrder order=new SecOrder();
         order.setOrderId(SecKillUtils.getOrderCode(userId));
-        order.setIsdone('0');
+        order.setState('0');
         order.setCreateTime(new Date());
         order.setItemId(item.getItemId());
         order.setUserId(userId);
+        order.setPrice(item.getPrice());
         if (updateStock(item, 1)){
             orderMapper.insertOrder(order);
+            //发送邮件消息
             sendService.sendMsg(order.getOrderId());
+            //发送订单消息到死信队列
+            sendService.sendDeadMsg(order.getOrderId());
             return true;
         }
         return false;

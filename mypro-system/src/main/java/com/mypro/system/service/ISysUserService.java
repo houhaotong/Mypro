@@ -74,4 +74,21 @@ public interface ISysUserService extends UserDetailsService {
      * @return 访问量
      */
     public int getPageView();
+
+
+    /**
+     * 修改用户密码
+     * @param userId 用户id
+     * @param oldPwd 旧密码
+     * @param newPwd 新密码
+     * @return true成功
+     */
+    public boolean updatePassword(Long userId,String oldPwd, String newPwd);
+
+    /**
+     * 通过登录名获取userId
+     * @param loginName 登录名
+     * @return 用户id
+     */
+    public Long selectUserIdByLoginName(String loginName);
 }

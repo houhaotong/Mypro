@@ -15,6 +15,9 @@ import org.springframework.boot.autoconfigure.amqp.RabbitTemplateConfigurer;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
+import java.util.HashMap;
+import java.util.Map;
+
 /**
  * rabbitMQ配置类
  * @author houhaotong
@@ -94,5 +97,47 @@ public class RabbitConfig {
     @Bean
     public Binding emailBinding(){
         return BindingBuilder.bind(emailQueue()).to(emailExchange()).with(myRabbitProperties.getEmail().getRoutingKey()).noargs();
+    }
+
+    /** 普通的队列，但是指定了死信交换机和路由，在这个队列中的消息过期后会由死信交换机分发到真正的死信队列 */
+    @Bean
+    public Queue normalQueue(){
+        Map<String, Object> args = new HashMap<>();
+        //设置死信参数
+        //指定死信交换机
+        args.put("x-dead-letter-exchange",myRabbitProperties.getDead().getExchange());
+        //指定死信路由
+        args.put("x-dead-letter-routing-key",myRabbitProperties.getDead().getRoutingKey());
+        return new Queue(myRabbitProperties.getDead().getNormalQueue(),true,false,false,args);
+    }
+
+    /** 创建普通交换机 */
+    @Bean
+    public Exchange normalExchange(){
+        return new TopicExchange(myRabbitProperties.getDead().getNormalExchange(),true,false);
+    }
+
+    /** 绑定普通队列和普通交换机 */
+    @Bean
+    public Binding normalBind(){
+        return BindingBuilder.bind(normalQueue()).to(normalExchange()).with(myRabbitProperties.getDead().getNormalRoutingKey()).noargs();
+    }
+
+    /** 创建死信交换机 */
+    @Bean
+    public Exchange deadExchange(){
+        return new TopicExchange(myRabbitProperties.getDead().getExchange(),true,false);
+    }
+
+    /** 创建真实存储死信的队列，当死信队列中消息过期后，转发到此队列，真实存储死信队列需要绑定死信交换机和路由 */
+    @Bean
+    public Queue realDeadQueue(){
+        return new Queue(myRabbitProperties.getDead().getRealDeadQueue(),true,false,false);
+    }
+
+    /** 绑定真实存储死信的队列与死信交换机 */
+    @Bean
+    public Binding realBindDead(){
+        return BindingBuilder.bind(realDeadQueue()).to(deadExchange()).with(myRabbitProperties.getDead().getRoutingKey()).noargs();
     }
 }

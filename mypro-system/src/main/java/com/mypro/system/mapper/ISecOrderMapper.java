@@ -37,4 +37,17 @@ public interface ISecOrderMapper {
      * @return 订单信息
      */
     public List<SecOrder> selectOrderByUserId(Long userId);
+
+    /**
+     * 更新订单信息
+     * @param order 订单信息
+     */
+    public void updateOrder(SecOrder order);
+
+    /**
+     * 通过用户id获取订单
+     * @param userId 用户id
+     * @return 订单集合
+     */
+    public List<SecOrderAndUserInfo> selectOrdersAndUserByUserId(Long userId);
 }

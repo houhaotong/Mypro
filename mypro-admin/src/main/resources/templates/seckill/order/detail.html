@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>订单详情</title>
+    <link th:href="@{/webjars/bootstrap/4.5.0/css/bootstrap.css}" rel="stylesheet">
+    <style type="text/css">
+        .btnGroup{
+            width: 300px;
+            margin: auto;
+            padding: 20px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="row">
+            <div class="col-md-6">
+                <img th:src="@{'/asserts/img/'+${item.img}+'.jpg'}" alt="商品图片">
+            </div>
+            <div class="col-md-6">
+                <h4>订单编号</h4>
+                <span id="orderId" th:text="${order.orderId}"></span><br/>
+                <h4>商品名称</h4>
+                <span th:text="${order.itemName}"></span><br/>
+                <h4>下单时间</h4>
+                <span th:text="${order.createTime}"></span><br/>
+                <h4>商品金额</h4>
+                <span th:text="${item.price+'元'}"></span><br/>
+                <h4>订单状态</h4>
+                <span th:if="${order.state}=='0'" th:text="未支付"></span>
+                <span th:if="${order.state}=='1'" th:text="已支付"></span>
+                <span th:if="${order.state}=='2'" th:text="已取消"></span>
+            </div>
+        </div>
+        <div class="btnGroup">
+            <button th:if="${order.money}>=${item.price}" class="btn btn-primary" th:onclick="pay([[${order.orderId}]])">支付</button>
+            <button th:if="${order.money}<${item.price}" class="btn btn-primary">余额不足</button>
+            <button class="btn btn-danger" onclick="">取消订单</button>
+        </div>
+    </div>
+</body>
+<th:block th:include="include::footer"/>
+<script>
+    function pay(orderId) {
+        $.ajax({
+            url:"/seckill/order/pay",
+            data: {orderId:orderId},
+            method:"post",
+            success:function (res) {
+                layer.alert(res,function () {
+                    parent.location.reload();
+                })
+            }
+        })
+    }
+</script>
+</html>

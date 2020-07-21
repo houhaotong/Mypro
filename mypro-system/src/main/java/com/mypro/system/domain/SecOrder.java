@@ -21,11 +21,22 @@ public class SecOrder implements Serializable {
     /** 创建时间 */
     private Date createTime;
 
-    /** 是否处理过 0否 1是 */
-    private char isdone;
+    /** 订单状态 0未支付 1已支付 2已取消 */
+    private char state;
 
     /** 更新者 */
     private String updateBy;
+
+    /** 订单金额 */
+    private Long price;
+
+    public Long getPrice() {
+        return price;
+    }
+
+    public void setPrice(Long price) {
+        this.price = price;
+    }
 
     public String getOrderId() {
         return orderId;
@@ -59,12 +70,12 @@ public class SecOrder implements Serializable {
         this.createTime = createTime;
     }
 
-    public char getIsdone() {
-        return isdone;
+    public char getState() {
+        return state;
     }
 
-    public void setIsdone(char isdone) {
-        this.isdone = isdone;
+    public void setState(char state) {
+        this.state = state;
     }
 
     public String getUpdateBy() {

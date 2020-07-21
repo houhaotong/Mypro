@@ -40,6 +40,9 @@ public class SysUser extends BaseEntities implements UserDetails {
     /** 用户类型 */
     private String userType;
 
+    /** 账户余额 */
+    private Long money;
+
     /** 用户邮箱 */
     private String email;
 
@@ -91,6 +94,14 @@ public class SysUser extends BaseEntities implements UserDetails {
             }
         }
         return false;
+    }
+
+    public Long getMoney() {
+        return money;
+    }
+
+    public void setMoney(Long money) {
+        this.money = money;
     }
 
     public String getDeptName() {

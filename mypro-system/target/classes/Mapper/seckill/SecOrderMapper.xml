@@ -8,16 +8,34 @@
         <result property="itemId" column="item_id"/>
         <result property="userId" column="user_id"/>
         <result property="createTime" column="create_time"/>
-        <result property="isdone" column="isdone"/>
+        <result property="state" column="state"/>
         <result property="updateBy" column="update_by"/>
+        <result property="price" column="price"/>
     </resultMap>
 
     <insert id="insertOrder">
-        insert into seckill_order (order_id, item_id, user_id, create_time, isdone, update_by)
-        VALUES (#{orderId}, #{itemId}, #{userId}, #{createTime}, #{isdone}, #{updateBy})
+        insert into seckill_order (order_id, item_id, user_id, create_time, state, update_by,price)
+        VALUES (#{orderId}, #{itemId}, #{userId}, #{createTime}, #{state}, #{updateBy},#{price})
     </insert>
+
+    <update id="updateOrder">
+        update seckill_order
+        <set>
+            <if test="orderId != null and orderId != ''">order_id=#{orderId},</if>
+            <if test="itemId != null and itemId != ''">item_id=#{itemId},</if>
+            <if test="userId != null and userId != ''">user_id=#{userId},</if>
+            <if test="createTime != null">create_time=#{createTime},</if>
+            <if test="state != null and state != ''">state=#{state},</if>
+            <if test="updateBy != null and updateBy != ''">update_by=#{updateBy},</if>
+            <if test="price != null and price != ''">price=#{price}</if>
+        </set>
+        where order_id=#{orderId}
+    </update>
+
     <select id="selectOrderByOrderId" resultMap="orderResult">
-        select * from seckill_order where order_id = #{orderId}
+        select *
+        from seckill_order
+        where order_id = #{orderId}
     </select>
     <select id="selectOrderByUserId" resultMap="orderResult">
         select *
@@ -25,10 +43,17 @@
         where user_id = #{userId}
     </select>
     <select id="selectOrderAndUserByOrderId" resultType="com.mypro.system.domain.SecOrderAndUserInfo">
-        select o.*, i.item_name, u.login_name, u.email, u.phonenumber
+        select o.*, i.item_name, u.login_name, u.email, u.phonenumber,u.money
         from seckill_order o
                  left join seckill_item i on o.item_id = i.item_id
                  left join sys_user u on u.user_id = o.user_id
         where order_id = #{orderId}
+    </select>
+    <select id="selectOrdersAndUserByUserId" resultType="com.mypro.system.domain.SecOrderAndUserInfo">
+        select o.*, i.item_name, u.login_name, u.email, u.phonenumber,u.money
+        from seckill_order o
+                 left join seckill_item i on o.item_id = i.item_id
+                 left join sys_user u on u.user_id = o.user_id
+        where o.user_id=#{userId}
     </select>
 </mapper>

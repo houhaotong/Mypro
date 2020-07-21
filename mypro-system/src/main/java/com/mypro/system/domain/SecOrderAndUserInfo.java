@@ -14,6 +14,15 @@ public class SecOrderAndUserInfo extends SecOrder {
 
     private String itemName;
 
+    private String money;
+
+    public String getMoney() {
+        return money;
+    }
+
+    public void setMoney(String money) {
+        this.money = money;
+    }
 
     public String getLoginName() {
         return loginName;

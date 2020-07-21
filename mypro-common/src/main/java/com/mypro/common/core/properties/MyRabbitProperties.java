@@ -1,7 +1,6 @@
 package com.mypro.common.core.properties;
 
 import org.springframework.boot.context.properties.ConfigurationProperties;
-import org.springframework.context.annotation.PropertySource;
 import org.springframework.stereotype.Component;
 
 /**
@@ -59,26 +58,27 @@ public class MyRabbitProperties {
     /** 死信消息模型（订单超时未支付） */
     public static class Dead{
 
-        private String queue;
+        private String normalQueue;
 
+        /** 死信交换机DLX */
         private String exchange;
 
+        /** 死信路由 */
         private String routingKey;
 
-        /** 真实队列 */
-        private String realQueue;
+        /** 真实存储死信队列 */
+        private String realDeadQueue;
 
+        private String normalExchange;
 
-        private String prodExchange;
+        private String normalRoutingKey;
 
-        private String prodRoutingKey;
-
-        public String getQueue() {
-            return queue;
+        public String getNormalQueue() {
+            return normalQueue;
         }
 
-        public void setQueue(String queue) {
-            this.queue = queue;
+        public void setNormalQueue(String normalQueue) {
+            this.normalQueue = normalQueue;
         }
 
         public String getExchange() {
@@ -97,28 +97,28 @@ public class MyRabbitProperties {
             this.routingKey = routingKey;
         }
 
-        public String getRealQueue() {
-            return realQueue;
+        public String getRealDeadQueue() {
+            return realDeadQueue;
         }
 
-        public void setRealQueue(String realQueue) {
-            this.realQueue = realQueue;
+        public void setRealDeadQueue(String realDeadQueue) {
+            this.realDeadQueue = realDeadQueue;
         }
 
-        public String getProdExchange() {
-            return prodExchange;
+        public String getNormalExchange() {
+            return normalExchange;
         }
 
-        public void setProdExchange(String prodExchange) {
-            this.prodExchange = prodExchange;
+        public void setNormalExchange(String normalExchange) {
+            this.normalExchange = normalExchange;
         }
 
-        public String getProdRoutingKey() {
-            return prodRoutingKey;
+        public String getNormalRoutingKey() {
+            return normalRoutingKey;
         }
 
-        public void setProdRoutingKey(String prodRoutingKey) {
-            this.prodRoutingKey = prodRoutingKey;
+        public void setNormalRoutingKey(String normalRoutingKey) {
+            this.normalRoutingKey = normalRoutingKey;
         }
     }
 
