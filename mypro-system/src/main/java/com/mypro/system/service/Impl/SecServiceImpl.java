@@ -1,5 +1,7 @@
 package com.mypro.system.service.Impl;
 
+import com.alibaba.fastjson.JSON;
+import com.mypro.common.utils.MyproCostant;
 import com.mypro.common.utils.SecKillUtils;
 import com.mypro.system.domain.SecItem;
 import com.mypro.system.domain.SecOrder;
@@ -10,12 +12,17 @@ import com.mypro.system.mapper.ISecOrderMapper;
 import com.mypro.system.mapper.ISysUserMapper;
 import com.mypro.system.service.IRabbitSendService;
 import com.mypro.system.service.ISecService;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Date;
 import java.util.List;
+import java.util.concurrent.locks.Lock;
+import java.util.concurrent.locks.ReentrantLock;
 
 /**
  * 秒杀 业务层
@@ -25,6 +32,7 @@ import java.util.List;
 @Transactional
 public class SecServiceImpl implements ISecService {
 
+    private final Logger log= LoggerFactory.getLogger(SecServiceImpl.class);
     @Autowired
     ISecItemMapper itemMapper;
 
@@ -37,28 +45,67 @@ public class SecServiceImpl implements ISecService {
     @Autowired
     IRabbitSendService sendService;
 
+    @Autowired
+    RedisTemplate<String, Object> redisTemplate;
+
+    private Lock lock=new ReentrantLock();
+
     @Override
     public List<SecItem> selectAll() {
-        List<SecItem> items = itemMapper.selectAll();
-        for (SecItem item : items) {
-            isOk(item);
+        List<SecItem> items= (List<SecItem>) redisTemplate.opsForValue().get(MyproCostant.REDIS_ITEM_KEY);
+        if (items==null) {
+            lock.lock();
+            try {
+                //双重检测锁
+                items= (List<SecItem>) redisTemplate.opsForValue().get(MyproCostant.REDIS_ITEM_KEY);
+                if (items==null) {
+                    items = itemMapper.selectAll();
+                    for (SecItem item : items) {
+                        isOk(item);
+                    }
+                    redisTemplate.opsForValue().set(MyproCostant.REDIS_ITEM_KEY,items);
+                    return items;
+                }
+            }catch (Exception e){
+                e.printStackTrace();
+            }finally {
+                lock.unlock();
+            }
         }
-        return items;
+        List<SecItem> secItems = JSON.parseArray(JSON.toJSONString(items), SecItem.class);
+        initItemStock(secItems);
+        return secItems;
+    }
+
+    /**
+     * 初始化redis库存缓存
+     * @param items 商品集合
+     */
+    public void initItemStock(List<SecItem> items){
+        for (SecItem item : items) {
+            redisTemplate.opsForValue().setIfAbsent(MyproCostant.REDIS_STOCK_KEY+item.getItemId(),item.getItemStock());
+        }
     }
 
     @Override
     public SecItem selectItemByItemId(Long itemId) {
-        SecItem item = itemMapper.selectItemByItemId(itemId);
-        isOk(item);
-        return item;
+        List<SecItem> items = selectAll();
+        for (SecItem item : items) {
+            if (item.getItemId().equals(itemId)){
+                Long stock = Long.valueOf(String.valueOf(redisTemplate.opsForValue().get(MyproCostant.REDIS_STOCK_KEY + itemId)));
+                item.setItemStock(stock);
+                return item;
+            }
+        }
+        return null;
     }
 
     @Override
     public boolean kill(Long itemId, String loginName) {
         SysUser user = userMapper.selectUserByLoginName(loginName);
         SecItem item = selectItemByItemId(itemId);
-        if(!boughtOrNot(user.getUserId(),itemId)) {
-            if (user != null && item != null) {
+        if (user.getUserId() != null && item != null) {
+            if (!boughtOrNot(user.getUserId(), itemId)) {
                 if (item.getIsok() == '1') {
                     return generateOrder(item, user.getUserId());
                 }
@@ -96,19 +143,43 @@ public class SecServiceImpl implements ISecService {
     }
 
     /**
+     * 测试用下单v2
+     * @param itemId 商品id
+     * @param userId 用户id
+     * @return true false
+     */
+    @Override
+    public boolean testKillV2(Long itemId, Long userId) {
+        SecItem item = selectItemByItemId(itemId);
+        if (userId != null && item != null) {
+            if (!boughtOrNot(userId, itemId)) {
+                if (item.getIsok() == '1') {
+                    return generateOrder(item, userId);
+                }
+            }
+        }
+        return false;
+    }
+
+    /**
      * 判断是否买过同一个商品
      * @param userId 用户id
      * @param itemId 商品id
      * @return true false
      */
     private boolean boughtOrNot(Long userId, Long itemId) {
+        //从redis检测是否有购买过的标识
+        if(redisTemplate.hasKey("order:"+userId+":"+itemId)) {
+            return true;
+        }
         List<SecOrder> orders = orderMapper.selectOrderByUserId(userId);
-        if (orders!=null) {
+        if (orders != null && orders.size() != 0) {
             for (SecOrder order : orders) {
                 if (order.getItemId().longValue() == itemId) {
                     return true;
                 }
             }
+            return false;
         }
         return false;
     }
@@ -121,13 +192,13 @@ public class SecServiceImpl implements ISecService {
      */
     public boolean generateOrder(SecItem item,Long userId){
         SecOrder order=new SecOrder();
-        order.setOrderId(SecKillUtils.getOrderCode(userId));
+        order.setOrderId(SecKillUtils.getOrdeIdBySnow());
         order.setState('0');
         order.setCreateTime(new Date());
         order.setItemId(item.getItemId());
         order.setUserId(userId);
         order.setPrice(item.getPrice());
-        if (updateStock(item, 1)){
+        if (updateStock(item.getItemId(),userId, 1)){
             orderMapper.insertOrder(order);
             //发送邮件消息
             sendService.sendMsg(order.getOrderId());
@@ -139,16 +210,45 @@ public class SecServiceImpl implements ISecService {
     }
     /**
      * 更新库存
-     * @param item 商品信息
+     * @param itemId 商品id
      * @param i 改变库存的数量
+     * @param userId 用户id
      * @return 是否修改成功
      */
-    private boolean updateStock(SecItem item, int i) {
-        if (item!=null) {
-            if(item.getItemStock()>0) {
-                item.setItemStock(item.getItemStock() - i);
-                if (itemMapper.updateItem(item) > 0) {
-                    return true;
+    private boolean updateStock(Long itemId,Long userId, int i) {
+        String stockKey=MyproCostant.REDIS_STOCK_KEY+itemId;
+        if (itemId!=null) {
+            //判断是否有库存数据
+            if (redisTemplate.hasKey(stockKey)) {
+                Long stock = Long.valueOf(String.valueOf(redisTemplate.opsForValue().get(stockKey)));
+                if (stock>0) {
+                    //库存减一
+                    Long decr_stock = redisTemplate.opsForValue().decrement(stockKey,i);
+                    //再次判断
+                    if (decr_stock>=0){
+                        //插入购买标识,如果已存在
+                        if (redisTemplate.opsForValue().setIfAbsent("order:"+userId+":"+itemId,1)) {
+                            //库存为空时更新数据库
+                            if (decr_stock==0){
+                                SecItem item = itemMapper.selectItemByItemId(itemId);
+                                item.setItemStock(0L);
+                                int result = itemMapper.updateItem(item);
+                                if (result!=1){
+                                    log.warn("库存更新失败");
+                                }else {
+                                    log.info("库存已经为0");
+                                    //删除缓存的库存数据
+                                    redisTemplate.delete(stockKey);
+                                    //删除缓存的商品信息
+                                    redisTemplate.delete(MyproCostant.REDIS_ITEM_KEY);
+                                }
+                            }
+                            return true;
+                        }else {
+                            //如果购买标识已存在，则库存回退
+                            redisTemplate.opsForValue().increment(stockKey,i);
+                        }
+                    }
                 }
             }
         }

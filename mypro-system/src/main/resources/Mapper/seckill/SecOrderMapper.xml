@@ -27,7 +27,7 @@
             <if test="createTime != null">create_time=#{createTime},</if>
             <if test="state != null and state != ''">state=#{state},</if>
             <if test="updateBy != null and updateBy != ''">update_by=#{updateBy},</if>
-            <if test="price != null and price != ''">price=#{price}</if>
+            <if test="price != null and price != ''">price=#{price},</if>
         </set>
         where order_id=#{orderId}
     </update>

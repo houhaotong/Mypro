@@ -58,6 +58,9 @@ public class SecKillUtils {
         return orderCode;
     }
 
+    public static String getOrdeIdBySnow(){
+        return String.valueOf(SNOW_FLAKE.nextId());
+    }
     /**
      * 生成随机数
      * @param num 长度

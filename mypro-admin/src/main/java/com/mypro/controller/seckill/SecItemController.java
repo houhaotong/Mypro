@@ -4,8 +4,10 @@ import com.alibaba.fastjson.JSON;
 import com.mypro.common.core.controller.BaseController;
 import com.mypro.common.utils.SecurityUtils;
 import com.mypro.system.domain.SecItem;
+import com.mypro.system.domain.testItemParam;
 import com.mypro.system.service.ISecService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.MediaType;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
 import org.springframework.web.bind.annotation.*;
@@ -48,6 +50,18 @@ public class SecItemController extends BaseController {
     public String itemBuy(@PathVariable Long itemId){
         String loginName = SecurityUtils.getCurrentUserName(getRequest());
         if (secService.kill(itemId,loginName)){
+            return "秒杀成功！";
+        }
+        return "秒杀失败";
+    }
+
+    /**
+     * 测试下单功能
+     */
+    @PostMapping(value = "/testBuy",consumes = MediaType.APPLICATION_JSON_VALUE)
+    @ResponseBody
+    public String testBuy(@RequestBody testItemParam param){
+        if (secService.testKillV2(param.getItemId(),param.getUserId())){
             return "秒杀成功！";
         }
         return "秒杀失败";

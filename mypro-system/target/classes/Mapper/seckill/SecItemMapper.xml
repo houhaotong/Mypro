@@ -16,8 +16,16 @@
         <result property="img" column="img"/>
     </resultMap>
     <update id="updateItem">
-        update seckill_item set item_name=#{itemName},item_stock=#{itemStock},start_time=#{startTime}
-                                ,end_time=#{endTime},isActive=#{isActive},price=#{price},img=#{img}
+        update seckill_item
+        <set>
+            <if test="itemName != null and itemName != ''">item_name=#{itemName},</if>
+            <if test="itemStock != null and itemStock >=0">item_stock=#{itemStock},</if>
+            <if test="startTime != null">start_time=#{startTime},</if>
+            <if test="endTime != null">end_time=#{endTime},</if>
+            <if test="isActive != null and isActive != ''">isActive=#{isActive},</if>
+            <if test="price != null and price != 0">price=#{price},</if>
+            <if test="img != null and img != ''">img=#{img}</if>
+        </set>
         where item_id=#{itemId}
     </update>
 

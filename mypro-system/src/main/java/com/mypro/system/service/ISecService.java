@@ -52,4 +52,12 @@ public interface ISecService {
      * @return 订单集合
      */
     public List<SecOrderAndUserInfo> selectOrdersByUserId(Long userId);
+
+    /**
+     * 测试用V2
+     * @param itemId 商品id
+     * @param userId 用户id
+     * @return true false
+     */
+    public boolean testKillV2(Long itemId, Long userId);
 }
