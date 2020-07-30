@@ -160,4 +160,19 @@ public final class RedisUtils {
     public int incr(String key) {
         return redisTemplate.opsForValue().increment(key).intValue();
     }
+
+    /**
+     * 获取Long类型值
+     * @param key 键
+     * @return Long
+     */
+    public Long getLong(String key){
+        Object o = redisTemplate.opsForValue().get(key);
+        if (o instanceof Integer){
+            Integer i=(Integer)o;
+            return Long.valueOf(i);
+        }
+        return null;
+    }
+
 }

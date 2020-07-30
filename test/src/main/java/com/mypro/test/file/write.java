@@ -8,11 +8,11 @@ public class write {
     public static void main(String[] args) {
         FileOutputStream outputStream=null;
         try {
-            File file=new File("D:/userId.txt");
+            File file=new File("D:/userId7000.txt");
             if (file.createNewFile()) {
                 outputStream=new FileOutputStream(file);
                 StringBuffer stringBuffer = new StringBuffer();
-                for (int i = 1; i <= 1000; i++) {
+                for (int i = 1; i <= 7000; i++) {
                     stringBuffer.append(i+",\r\n");
                 }
                 outputStream.write(stringBuffer.toString().getBytes());
